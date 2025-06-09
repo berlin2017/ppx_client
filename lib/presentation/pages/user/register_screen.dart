@@ -1,11 +1,11 @@
 // lib/ui/screens/register_screen.dart
 import 'package:flutter/material.dart';
-import 'package:ppx_client/presentation/pages/user_list_page.dart';
+import 'package:ppx_client/presentation/pages/user/user_list_page.dart';
 import 'package:provider/provider.dart';
 
-import '../../widgets/custom_button.dart';
-import '../../widgets/custom_text_field.dart';
-import '../viewmodels/auth_viewmodel.dart';
+import '../../../widgets/custom_button.dart';
+import '../../../widgets/custom_text_field.dart';
+import '../../viewmodels/auth_viewmodel.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});

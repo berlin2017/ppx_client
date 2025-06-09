@@ -1,6 +1,6 @@
 // lib/app.dart
 import 'package:flutter/material.dart';
-import 'package:ppx_client/presentation/pages/home_screen.dart';
+import 'package:ppx_client/presentation/pages/home/home_screen.dart';
 import 'package:ppx_client/presentation/viewmodels/auth_viewmodel.dart';
 import 'package:provider/provider.dart';
 

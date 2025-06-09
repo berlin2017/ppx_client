@@ -1,7 +1,7 @@
 // lib/core/utils/app_router.dart
 import 'package:flutter/material.dart';
 
-import '../../presentation/pages/user_list_page.dart';
+import '../../presentation/pages/user/user_list_page.dart';
 
 class AppRouter {
   static const String userListPage = '/';

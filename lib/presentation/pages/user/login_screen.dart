@@ -1,13 +1,13 @@
 // lib/ui/screens/login_screen.dart
 import 'package:flutter/material.dart';
-import 'package:ppx_client/presentation/pages/home_screen.dart';
-import 'package:ppx_client/presentation/pages/user_list_page.dart';
+import 'package:ppx_client/presentation/pages/user/register_screen.dart';
+import 'package:ppx_client/presentation/pages/user/user_list_page.dart';
 import 'package:provider/provider.dart';
 
-import '../../widgets/custom_button.dart';
-import '../../widgets/custom_text_field.dart';
-import '../viewmodels/auth_viewmodel.dart';
-import 'register_screen.dart';
+import '../../../widgets/custom_button.dart';
+import '../../../widgets/custom_text_field.dart';
+import '../../viewmodels/auth_viewmodel.dart';
+import '../home/home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});

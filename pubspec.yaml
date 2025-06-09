@@ -42,6 +42,7 @@ dependencies:
   logger: ^2.2.0 # 日志
   connectivity_plus: ^6.0.3 # 网络连接状态检测 (可选)
   json_annotation: ^4.8.1 # 建议使用最新版本
+  lottie: 3.3.1 # Or a specific version like ^2.7.0
 
 dev_dependencies:
   flutter_test:
@@ -56,6 +57,7 @@ dev_dependencies:
   hive_generator: ^2.0.1 # Hive 代码生成
   build_runner: ^2.4.9 # 代码生成器
   json_serializable: ^6.7.1 # 建议使用最新版本 (用于 JSON 代码生成)
+  lottie: 3.3.1 # Or a specific version like ^2.7.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -67,6 +69,8 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+  assets:
+    - assets/animations/
 
   # To add assets to your application, add an assets section, like this:
   # assets:

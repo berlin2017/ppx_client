@@ -4,12 +4,19 @@ import 'package:path_provider/path_provider.dart';
 import 'package:ppx_client/core/utils/app_logger.dart';
 
 import '../../data/models/user_model.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class AppDatabase {
   static Future<void> init() async {
     try {
-      final appDocumentDir = await getApplicationDocumentsDirectory();
-      await Hive.initFlutter(appDocumentDir.path);
+      if (kIsWeb) {
+        // 对于 Web 平台，直接初始化，不需要路径
+        await Hive.initFlutter();
+      } else {
+        // 对于其他平台 (如移动端)
+        final appDocumentDir = await getApplicationDocumentsDirectory();
+        await Hive.initFlutter(appDocumentDir.path);
+      }
 
       // 注册Adapter (如果你的模型需要存储到Hive)
       Hive.registerAdapter(UserModelAdapter()); // 为 UserModel 注册适配器

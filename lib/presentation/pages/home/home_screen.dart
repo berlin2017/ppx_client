@@ -1,14 +1,15 @@
 // lib/presentation/pages/home_screen.dart
 import 'package:flutter/material.dart';
-import 'package:ppx_client/presentation/pages/user_list_page.dart';
+import 'package:ppx_client/presentation/pages/user/user_list_page.dart';
 import 'package:provider/provider.dart'; // 如果你需要访问 AuthViewModel
 
-import '../../widgets/AnimatedBackground.dart';
-import '../../widgets/AnimatedCard.dart';
-import '../../widgets/FadeInAnimation.dart';
-import '../../widgets/SlideInAnimation.dart';
-import '../viewmodels/auth_viewmodel.dart'; // 示例：如果你需要用户信息
-import 'login_screen.dart'; // 用于示例动画
+import '../../../widgets/AnimatedBackground.dart';
+import '../../../widgets/AnimatedCard.dart';
+import '../../../widgets/FadeInAnimation.dart';
+import '../../../widgets/SlideInAnimation.dart';
+import '../../viewmodels/auth_viewmodel.dart';
+import '../user/login_screen.dart';
+import 'HomeScreen2.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -140,6 +141,11 @@ class _HomeScreenState extends State<HomeScreen>
                         // TODO: 跳转到文章列表页面
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(content: Text('跳转到文章列表')),
+                        );
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => const HomeScreen2(),
+                          ),
                         );
                       },
                     ),

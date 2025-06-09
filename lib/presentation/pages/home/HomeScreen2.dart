@@ -1,5 +1,9 @@
+
 import 'package:flutter/material.dart';
-import 'package:ppx_client/presentation/home/home_page_view.dart'; // Added import
+import 'package:ppx_client/presentation/pages/home/home_page_view.dart';
+import 'package:ppx_client/presentation/discover/discover_page.dart';
+import 'package:ppx_client/presentation/messages/messages_page.dart';
+import 'package:ppx_client/presentation/profile/profile_page.dart';
 
 class HomeScreen2 extends StatefulWidget {
   const HomeScreen2({super.key});
@@ -11,12 +15,11 @@ class HomeScreen2 extends StatefulWidget {
 class _HomeScreen2State extends State<HomeScreen2> {
   int _selectedIndex = 0;
 
-  // Updated to use the imported HomePageView
   static final List<Widget> _widgetOptions = <Widget>[
-    const HomePageView(), // Uses the imported HomePageView
-    const Text('发现 Page'), // Placeholder for Discover page
-    const Text('消息 Page'), // Placeholder for Messages page
-    const Text('我的 Page'), // Placeholder for Profile page
+    const HomePageView(),
+    const DiscoverPage(),
+    const MessagesPage(),
+    const ProfilePage(),
   ];
 
   void _onItemTapped(int index) {
@@ -28,8 +31,9 @@ class _HomeScreen2State extends State<HomeScreen2> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: _widgetOptions.elementAt(_selectedIndex),
+      body: IndexedStack(
+        index: _selectedIndex,
+        children: _widgetOptions,
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
@@ -60,14 +64,3 @@ class _HomeScreen2State extends State<HomeScreen2> {
     );
   }
 }
-
-// Placeholder for the Home Page content which will have the ViewPager -- REMOVED
-// class HomePageView extends StatelessWidget {
-//   const HomePageView({super.key});
-// 
-//   @override
-//   Widget build(BuildContext context) {
-//     // We'll implement the TabBar and ViewPager here later
-//     return const Center(child: Text("首页 Content Area (ViewPager will be here)"));
-//   }
-// }

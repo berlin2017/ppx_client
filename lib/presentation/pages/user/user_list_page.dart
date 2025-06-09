@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../viewmodels/user_list_viewmodel.dart';
+import '../../viewmodels/user_list_viewmodel.dart';
 
 class UserListPage extends StatelessWidget {
   const UserListPage({super.key});
