@@ -1,7 +1,6 @@
 // lib/app.dart
 import 'package:flutter/material.dart';
-import 'package:ppx_client/presentation/pages/login_screen.dart';
-import 'package:ppx_client/presentation/pages/user_list_page.dart';
+import 'package:ppx_client/presentation/pages/home_screen.dart';
 import 'package:ppx_client/presentation/viewmodels/auth_viewmodel.dart';
 import 'package:provider/provider.dart';
 
@@ -57,9 +56,9 @@ class MyApp extends StatelessWidget {
               ); // 初始加载状态
             }
             if (authViewModel.currentUser != null) {
-              return const UserListPage();
+              return const HomeScreen();
             }
-            return const LoginScreen();
+            return const HomeScreen();
           },
         ),
       ),

@@ -1,5 +1,6 @@
 // lib/ui/screens/login_screen.dart
 import 'package:flutter/material.dart';
+import 'package:ppx_client/presentation/pages/home_screen.dart';
 import 'package:ppx_client/presentation/pages/user_list_page.dart';
 import 'package:provider/provider.dart';
 
@@ -40,7 +41,7 @@ class _LoginScreenState extends State<LoginScreen> {
       );
       if (success && mounted) {
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const UserListPage()),
+          MaterialPageRoute(builder: (_) => const HomeScreen()),
         );
       } else {
         if (viewModel.errorMessage != null && mounted) {
