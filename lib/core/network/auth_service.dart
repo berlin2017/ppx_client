@@ -2,6 +2,7 @@
 import 'dart:math';
 
 import 'package:hive/hive.dart';
+import 'package:ppx_client/core/utils/app_logger.dart';
 
 import '../../data/models/user_model.dart';
 import 'dio_client.dart'; // For random ID
@@ -24,7 +25,6 @@ class AuthService {
   Future<UserModel?> login(String email, String password) async {
     final data = {'email': email, 'password': password};
     final response = await _dioClient.dio.post("/login", data: data);
-    // 简单模拟：如果密码是 "password"，则登录成功
     if (response.data != null) {
       final user = UserModel.fromJson(response.data);
       await saveUser(user); // 保存带 token 的用户信息
@@ -40,29 +40,16 @@ class AuthService {
     required String email,
     required String password,
   }) async {
-    // 实际应用中，这里会发起网络请求
-    await Future.delayed(const Duration(seconds: 1));
-
-    // 简单模拟：检查邮箱是否已被注册 (实际应由后端处理)
-    var box = await _getUserBox();
-    bool emailExists = box.values.any((user) => user.email == email);
-
-    if (emailExists) {
+    final data = {'name': name, 'email': email, 'password': password};
+    final response = await _dioClient.dio.post("/users", data: data);
+    if (response.statusCode == 417) {
       throw Exception("邮箱已被注册"); // 或者返回特定的错误对象
     }
 
-    if (name.isNotEmpty && email.isNotEmpty && password.length >= 6) {
-      final newUser = UserModel(
-        id: Random().nextInt(10000),
-        // 模拟用户 ID
-        name: name,
-        email: email,
-        token:
-            "fake_jwt_token_for_new_user_${DateTime.now().millisecondsSinceEpoch}",
-        avatar: 'https://picsum.photos/seed/${email.hashCode}/200', // 随机头像
-      );
-      await saveUser(newUser); // 注册成功后保存用户信息
-      return newUser;
+    if (response.data != null) {
+      final user = UserModel.fromJson(response.data);
+      await saveUser(user); // 保存带 token 的用户信息
+      return user;
     }
     return null; // 注册失败
   }
@@ -77,7 +64,7 @@ class AuthService {
     // 这里我们假设 email 是唯一的，并用它来查找或更新
     // 或者，如果我们只存储一个当前登录用户，可以用一个固定的 key
     await box.put('currentUser', user); // 使用固定 key 'currentUser' 存储当前用户
-    print("User saved: ${user.name}");
+    AppLogger.info("User saved: ${user.name}");
   }
 
   // 获取当前登录的用户信息
@@ -91,6 +78,6 @@ class AuthService {
     final box = await _getUserBox();
     await box.delete('currentUser'); // 删除当前用户信息
     // 实际应用中可能还需要通知后端 token 失效等
-    print("User logged out");
+    AppLogger.info("User logged out");
   }
 }
