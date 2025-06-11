@@ -43,6 +43,8 @@ dependencies:
   connectivity_plus: ^6.0.3 # 网络连接状态检测 (可选)
   json_annotation: ^4.8.1 # 建议使用最新版本
   lottie: 3.3.1 # Or a specific version like ^2.7.0
+  video_player: ^2.8.6 # Or the latest version
+  video_player_win: ^3.1.1
 
 dev_dependencies:
   flutter_test:
