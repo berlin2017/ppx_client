@@ -49,6 +49,7 @@ dependencies:
   camera: ^0.10.6 # 或者最新版本
   image_picker: ^1.1.2 # 或者最新版本
   image_picker_windows: ^0.2.1+1
+  dotted_border: ^2.1.0 # Or latest version
 
 dev_dependencies:
   flutter_test:
