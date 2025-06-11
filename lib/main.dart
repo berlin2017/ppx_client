@@ -49,6 +49,7 @@ void main() async {
         Provider<UserLocalDataSource>(create: (_) => userLocalDataSource),
         Provider<UserRepositoryImpl>(create: (_) => userRepository),
         Provider<PostRepository>(create: (_) => postRepository),
+        Provider<PostApiService>(create: (_) => postApiSerVice),
         // 注入 UserRepositoryImpl
         ChangeNotifierProvider(
           create: (context) => UserListViewModel(

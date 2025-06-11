@@ -47,6 +47,13 @@
 	<true/>
 	<key>NSAllowsArbitraryLoads</key>
     <true/>
+    <key>NSCameraUsageDescription</key>
+    <string>本应用需要访问您的相机来拍摄照片。</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>本应用需要访问您的相册来选择照片。</string>
+    <!-- 如果 image_picker 涉及保存图片到相册 (虽然我们这里主要演示拾取) -->
+    <key>NSPhotoLibraryAddUsageDescription</key>
+    <string>本应用需要将照片保存到您的相册。</string>
 </dict>
 <key>NSAppTransportSecurity</key>
 </plist>
