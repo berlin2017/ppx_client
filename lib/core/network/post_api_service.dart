@@ -2,6 +2,7 @@
 import 'package:camera/camera.dart';
 import 'package:dio/dio.dart';
 import 'package:hive/hive.dart';
+import 'package:http_parser/http_parser.dart'; // Ensure this is imported
 import 'package:ppx_client/data/models/post_item_model.dart';
 
 import '../../data/models/user_model.dart';
@@ -43,10 +44,18 @@ class PostApiService {
     final formData = FormData.fromMap({
       'textContent': textContent,
       'image_files': await Future.wait(
-        imageFiles.map((file) => MultipartFile.fromFile(file.path)),
+        imageFiles.map(
+          (file) => MultipartFile.fromFile(
+            file.path,
+            contentType: MediaType('image', 'jpeg'),
+          ),
+        ),
       ),
       if (videoFile != null)
-        'video_file': await MultipartFile.fromFile(videoFile.path),
+        'video_file': await MultipartFile.fromFile(
+          videoFile.path,
+          contentType: MediaType('video', 'mp4'),
+        ),
     });
 
     UserModel? userModel = await getCurrentUser(); // 假设你有方法获取当前用户ID

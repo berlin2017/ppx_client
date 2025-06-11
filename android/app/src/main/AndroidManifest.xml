@@ -58,18 +58,19 @@
             <data android:mimeType="text/plain"/>
         </intent>
 
-        <!-- If you want to use the camera -->
+        <!-- 相机 intent -->
         <intent>
             <action android:name="android.media.action.IMAGE_CAPTURE" />
         </intent>
-        <!-- If you want to pick images from the gallery -->
+        <!-- 从相册选择图片的 intent (ACTION_PICK) -->
         <intent>
             <action android:name="android.intent.action.PICK" />
-            <data android:type="image/*" />
+            <data android:mimeType="image/*" />
         </intent>
+        <!-- 从相册选择内容的 intent (ACTION_GET_CONTENT) -->
         <intent>
             <action android:name="android.intent.action.GET_CONTENT" />
-            <data android:type="image/*" />
+            <data android:mimeType="image/*" />
         </intent>
     </queries>
 </manifest>
