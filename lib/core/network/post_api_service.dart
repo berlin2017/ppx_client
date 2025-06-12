@@ -21,12 +21,16 @@ class PostApiService {
     return Hive.box<UserModel>(_userBoxName);
   }
 
-  Future<List<PostItem>> fetchPosts({int page = 0, int limit = 20}) async {
+  Future<List<PostItem>> fetchPosts({
+    int page = 0,
+    int limit = 20,
+  }) async {
     try {
+      final userId = (await getCurrentUser())?.id ?? -1; // 获取当前用户ID，如果未登录则使用 -1
       // 这里可以添加分页参数，例如 page 和 limit
       final response = await _dioClient.dio.get(
         '/posts',
-        queryParameters: {'page': page, 'limit': limit},
+        queryParameters: {'userId': userId, 'page': page, 'limit': limit},
       );
       return (response.data as List)
           .map((json) => PostItem.fromJson(json))
@@ -81,4 +85,76 @@ class PostApiService {
   }
 
   // 你可以在这里添加其他与帖子相关的API调用，例如创建帖子、点赞等
+
+  Future<bool> likePost(int postId) async {
+    UserModel? userModel = await getCurrentUser(); // 假设你有方法获取当前用户ID
+    if (userModel == null) {
+      throw Exception('用户未登录或不存在');
+    }
+
+    final data = {'postId': postId, 'userId': userModel.id};
+    try {
+      final response = await _dioClient.dio.post(
+        '/posts_like',
+        queryParameters: data,
+      );
+      return response.statusCode == 200;
+    } on DioException catch (e) {
+      throw Exception('帖子点赞失败: ${e.message}');
+    }
+  }
+
+  Future<bool> unlikePost(int postId) async {
+    UserModel? userModel = await getCurrentUser(); // 假设你有方法获取当前用户ID
+    if (userModel == null) {
+      throw Exception('用户未登录或不存在');
+    }
+
+    final data = {'postId': postId, 'userId': userModel.id};
+    try {
+      final response = await _dioClient.dio.post(
+        '/posts_unlike',
+        queryParameters: data,
+      );
+      return response.statusCode == 200;
+    } on DioException catch (e) {
+      throw Exception('帖子取消点赞失败: ${e.message}');
+    }
+  }
+
+  Future<bool> dislikePost(int postId) async {
+    UserModel? userModel = await getCurrentUser(); // 假设你有方法获取当前用户ID
+    if (userModel == null) {
+      throw Exception('用户未登录或不存在');
+    }
+
+    final data = {'postId': postId, 'userId': userModel.id};
+    try {
+      final response = await _dioClient.dio.post(
+        '/posts_dislike',
+        queryParameters: data,
+      );
+      return response.statusCode == 200;
+    } on DioException catch (e) {
+      throw Exception('帖子踩失败: ${e.message}');
+    }
+  }
+
+  Future<bool> undislikePost(int postId) async {
+    UserModel? userModel = await getCurrentUser(); // 假设你有方法获取当前用户ID
+    if (userModel == null) {
+      throw Exception('用户未登录或不存在');
+    }
+
+    final data = {'postId': postId, 'userId': userModel.id};
+    try {
+      final response = await _dioClient.dio.post(
+        '/posts_undislike',
+        queryParameters: data,
+      );
+      return response.statusCode == 200;
+    } on DioException catch (e) {
+      throw Exception('帖子取消踩失败: ${e.message}');
+    }
+  }
 }

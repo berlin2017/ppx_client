@@ -3,13 +3,36 @@ import 'package:ppx_client/core/constants/AppConstants.dart';
 import 'package:ppx_client/core/utils/app_logger.dart';
 import 'package:ppx_client/data/models/post_item_model.dart';
 import 'package:ppx_client/data/models/user_model.dart';
+import 'package:provider/provider.dart';
 
+import '../core/network/post_api_service.dart';
 import 'content_list_videoplayer.dart'; // 确保 UserModel 被正确导入
 
-class ContentListItem extends StatelessWidget {
+class ContentListItem extends StatefulWidget {
   final PostItem post;
 
   const ContentListItem({super.key, required this.post});
+
+  @override
+  State<ContentListItem> createState() => _ContentListItemState();
+}
+
+class _ContentListItemState extends State<ContentListItem> {
+  late bool _isLiked;
+  late bool _isUnliked;
+  late int _likesCount;
+  late int _unlikesCount;
+  late PostApiService _postApiService; // API 服务实例
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _isLiked = widget.post.isLiked;
+    _likesCount = widget.post.likesCount;
+    _isUnliked = widget.post.isUnliked;
+    _unlikesCount = widget.post.unLikesCount;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,15 +45,123 @@ class ContentListItem extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildUserInfoRow(context, post.userInfo),
+            _buildUserInfoRow(context, widget.post.userInfo),
             const SizedBox(height: 12.0),
-            _buildContentArea(context, post),
+            _buildContentArea(context, widget.post),
             const SizedBox(height: 12.0),
-            _buildActionButtonsRow(context, post),
+            _buildActionButtonsRow(context, widget.post),
           ],
         ),
       ),
     );
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // 在 didChangeDependencies 中获取 Provider 提供的服务实例
+    // 因为 context 在 initState 时可能还不能安全地用于 Provider.of
+    _postApiService = Provider.of<PostApiService>(context, listen: false);
+  }
+
+  Future<void> _toggleLike() async {
+    // 乐观更新的准备：保存旧状态
+    final oldIsLiked = _isLiked;
+    final oldLikesCount = _likesCount;
+    final oldIsUnliked = _isUnliked;
+    final oldUnlikesCount = _unlikesCount;
+
+    // 乐观更新UI
+    setState(() {
+      _isLiked = !_isLiked;
+      _likesCount = _isLiked ? _likesCount + 1 : _likesCount - 1;
+      if (_isLiked && _isUnliked) {
+        // 如果点了赞，且之前是点踩状态，则取消点踩
+        _isUnliked = false;
+        _unlikesCount = oldUnlikesCount - 1 >= 0
+            ? oldUnlikesCount - 1
+            : 0; // 确保不为负
+      }
+    });
+
+    bool success = false;
+    try {
+      final postItem = widget.post;
+      if (oldIsLiked) {
+        // 如果已经点赞，取消点赞
+        success = await _postApiService.unlikePost(postItem.id);
+      } else {
+        // 如果未点赞，执行点赞
+        success = await _postApiService.likePost(postItem.id);
+      }
+    } catch (e) {
+      AppLogger.error('Error toggling like: $e');
+      success = false;
+    }
+
+    if (!success) {
+      setState(() {
+        _isLiked = oldIsLiked;
+        _likesCount = oldLikesCount;
+        _isUnliked = oldIsUnliked;
+        _unlikesCount = oldUnlikesCount;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(_isLiked ? "取消点赞失败，请稍后重试" : '点赞失败，请稍后重试')),
+      );
+    } else {
+      setState(() {}); // 更新界面
+    }
+  }
+
+  Future<void> _toggleUnLike() async {
+    // 乐观更新的准备：保存旧状态
+    final oldIsLiked = _isLiked;
+    final oldLikesCount = _likesCount;
+    final oldIsUnliked = _isUnliked;
+    final oldUnlikesCount = _unlikesCount;
+
+    // 乐观更新UI
+    setState(() {
+      _isUnliked = !_isUnliked;
+      _unlikesCount = _isUnliked ? _unlikesCount + 1 : _unlikesCount - 1;
+      if (_isLiked && _isUnliked) {
+        // 如果点了赞，且之前是点踩状态，则取消点踩
+        _isLiked = false;
+        _likesCount = oldLikesCount - 1 >= 0
+            ? oldLikesCount - 1
+            : 0; // 确保不为负
+      }
+    });
+
+    bool success = false;
+    try {
+      final postItem = widget.post;
+      if (oldIsUnliked) {
+        // 如果已经点赞，取消点赞
+        success = await _postApiService.undislikePost(postItem.id);
+      } else {
+        // 如果未点赞，执行点赞
+        success = await _postApiService.dislikePost(postItem.id);
+      }
+    } catch (e) {
+      AppLogger.error('Error toggling like: $e');
+      success = false;
+    }
+
+    if (!success) {
+      setState(() {
+        _isLiked = oldIsLiked;
+        _likesCount = oldLikesCount;
+        _isUnliked = oldIsUnliked;
+        _unlikesCount = oldUnlikesCount;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(_isLiked ? "取消点赞失败，请稍后重试" : '点赞失败，请稍后重试')),
+      );
+    } else {
+      setState(() {}); // 更新界面
+    }
   }
 
   Widget _buildUserInfoRow(BuildContext context, UserModel userInfo) {
@@ -57,7 +188,7 @@ class ContentListItem extends StatelessWidget {
           ),
         ),
         // 可以添加更多按钮，比如关注按钮或更多操作菜单
-        if (post.postType == PostType.advertisement)
+        if (widget.post.postType == PostType.advertisement)
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
             decoration: BoxDecoration(
@@ -255,23 +386,25 @@ class ContentListItem extends StatelessWidget {
       children: [
         _buildActionButton(
           context,
-          icon: post.isLiked ? Icons.thumb_up_alt : Icons.thumb_up_alt_outlined,
-          label: post.likesCount.toString(),
-          color: post.isLiked ? Theme.of(context).primaryColor : Colors.grey,
+          icon: _isLiked ? Icons.thumb_up_alt : Icons.thumb_up_alt_outlined,
+          label: _likesCount.toString(),
+          color: _isLiked ? Theme.of(context).primaryColor : Colors.grey,
           onPressed: () {
             // TODO: 实现点赞/取消点赞逻辑
+            _toggleLike();
             AppLogger.info('Like button tapped for post ${post.id}');
           },
         ),
         _buildActionButton(
           context,
-          icon: post.isUnliked
+          icon: _isUnliked
               ? Icons.thumb_down_alt
               : Icons.thumb_down_alt_outlined,
-          label: post.unLikesCount.toString(),
-          color: post.isUnliked ? Theme.of(context).primaryColor : Colors.grey,
+          label: _unlikesCount.toString(),
+          color: _isUnliked ? Theme.of(context).primaryColor : Colors.grey,
           onPressed: () {
             // TODO: 实现踩/取消踩逻辑
+            _toggleUnLike();
             AppLogger.info('Dislike button tapped for post ${post.id}');
           },
         ),
