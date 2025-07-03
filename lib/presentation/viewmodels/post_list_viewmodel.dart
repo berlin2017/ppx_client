@@ -26,66 +26,77 @@ class PostListViewModel extends ChangeNotifier {
   String? get errorMessage => _errorMessage;
 
   // 统一的加载方法
-  Future<void> loadPosts({bool isRefresh = false}) async {
+  Future<void> loadPosts({bool isRefresh = false, int? userId, int? categoryId}) async {
     if (isRefresh) {
       _isLoadingMore = true;
-      _errorMessage = null; // 清除旧错误
-      // 通常在刷新时，我们希望清除旧数据并显示加载指示器，
-      // 但这里我们先加载缓存，再请求网络，所以 _posts 不会立即清空
+      _errorMessage = null;
     } else {
       _isLoadingInitial = true;
     }
     notifyListeners();
 
     bool cacheLoaded = false;
-    // 1. 尝试从缓存加载 (仅在非刷新或首次加载时，或希望刷新时也先显示旧数据)
-    if (!isRefresh) {
-      // 或者根据你的刷新策略调整
+    if (!isRefresh && userId == null && categoryId == null) { // Only load from cache for general feed
       try {
         final cachedPosts = await _repository.getCachedPosts();
         if (cachedPosts.isNotEmpty) {
           _posts = cachedPosts;
           cacheLoaded = true;
-          // 如果是从缓存加载的，初始加载完成
           _isLoadingInitial = false;
-          notifyListeners(); // 立即显示缓存数据
+          notifyListeners();
         }
       } catch (e) {
         AppLogger.error("ViewModel: Error loading cached posts: $e");
-        // 缓存加载失败，继续尝试网络加载
       }
     }
 
-    // 2. 总是尝试从网络获取最新数据
-    // 如果是刷新，isLoadingMore 应该为 true
-    // 如果是首次加载且缓存为空，isLoadingInitial 应该为 true (或转为 isLoadingMore)
     if (!cacheLoaded && !isRefresh) {
-      // 如果缓存为空且不是刷新，也认为是在加载更多/网络
-      _isLoadingInitial = false; // 初始（缓存）阶段结束
-      _isLoadingMore = true; // 网络加载阶段开始
+      _isLoadingInitial = false;
+      _isLoadingMore = true;
       notifyListeners();
     }
 
     try {
       final remotePosts = await _repository.fetchAndCacheRemotePosts(
         clearCacheFirst: isRefresh,
+        userId: userId,
+        categoryId: categoryId,
       );
-      _posts = remotePosts; // 使用最新的网络数据更新列表
-      _errorMessage = null; // 成功获取，清除错误信息
+      _posts = remotePosts;
+      _errorMessage = null;
     } catch (e) {
       AppLogger.error("ViewModel: Error fetching remote posts: $e");
       _errorMessage = "无法加载最新内容: ${e.toString()}";
-      // 如果网络失败，_posts 列表将保持为之前从缓存加载的数据（如果有）
-      // 如果缓存也没有数据，那么 _posts 仍然是空的
     } finally {
-      _isLoadingInitial = false; // 确保最终初始加载状态为false
+      _isLoadingInitial = false;
       _isLoadingMore = false;
       notifyListeners();
     }
   }
 
-  // TODO: 实现分页加载逻辑 (loadMorePosts)
-  // Future<void> loadMorePosts() async { ... }
+  int _currentPage = 1;
+
+  Future<void> loadMorePosts({int? userId, int? categoryId}) async {
+    if (_isLoadingMore) return;
+
+    _isLoadingMore = true;
+    notifyListeners();
+
+    try {
+      final newPosts = await _repository.fetchAndCacheRemotePosts(userId: userId, categoryId: categoryId, page: _currentPage);
+      _posts.addAll(newPosts);
+      if (newPosts.isNotEmpty) {
+        _currentPage++;
+      }
+      _errorMessage = null;
+    } catch (e) {
+      AppLogger.error("ViewModel: Error fetching more remote posts: $e");
+      _errorMessage = "无法加载更多内容: ${e.toString()}";
+    } finally {
+      _isLoadingMore = false;
+      notifyListeners();
+    }
+  }
 
   // TODO: 实现点赞/踩等交互方法，调用Repository，并更新_posts中对应item的状态
   // Future<void> toggleLike(String postId) async { ... }

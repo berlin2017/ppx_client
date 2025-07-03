@@ -27,21 +27,35 @@ class PostRepository {
   // forceRefresh 参数可以用于下拉刷新等场景，总是从网络获取
   Future<List<PostItem>> fetchAndCacheRemotePosts({
     bool clearCacheFirst = false,
+    int? userId,
+    int? categoryId,
+    int page = 0,
   }) async {
     try {
-      final remotePosts = await _apiService.fetchPosts(); // 可以添加分页参数
+      final remotePosts = await _apiService.fetchPosts(userId: userId, categoryId: categoryId, page: page);
       if (remotePosts.isNotEmpty) {
         if (clearCacheFirst) {
           await _postDao.clearAllPosts();
         }
-        await _postDao.insertPosts(remotePosts); // DAO 应处理好插入/更新逻辑
+        await _postDao.insertPosts(remotePosts);
       }
       return remotePosts;
     } catch (e) {
       AppLogger.error("Error fetching remote posts: $e");
-      // 根据策略，这里可以返回空列表，或者抛出错误让ViewModel处理
-      // 如果网络请求失败，ViewModel 依然会保留之前从缓存加载的数据（如果有）
-      throw e; // 重新抛出，让ViewModel知道网络请求失败了
+      throw e;
+    }
+  }
+
+  Future<List<PostItem>> fetchMyPosts({int page = 0}) async {
+    try {
+      final remotePosts = await _apiService.fetchMyPosts(page: page);
+      if (remotePosts.isNotEmpty) {
+        await _postDao.insertPosts(remotePosts);
+      }
+      return remotePosts;
+    } catch (e) {
+      AppLogger.error("Error fetching my remote posts: $e");
+      throw e;
     }
   }
 

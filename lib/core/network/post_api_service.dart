@@ -22,11 +22,44 @@ class PostApiService {
   }
 
   Future<List<PostItem>> fetchPosts({
+    int? userId,
+    int? categoryId,
     int page = 0,
     int limit = 20,
   }) async {
     try {
-      final userId = (await getCurrentUser())?.id ?? -1; // 获取当前用户ID，如果未登录则使用 -1
+      final queryParameters = <String, dynamic>{
+        'page': page,
+        'limit': limit,
+      };
+      if (userId != null) {
+        queryParameters['userId'] = userId;
+      }
+      if (categoryId != null) {
+        queryParameters['categoryId'] = categoryId;
+      }
+
+      final response = await _dioClient.dio.get(
+        '/posts',
+        queryParameters: queryParameters,
+      );
+      return (response.data as List)
+          .map((json) => PostItem.fromJson(json))
+          .toList();
+    } on DioException catch (e) {
+      throw Exception('获取内容列表失败: ${e.message}');
+    }
+  }
+
+  Future<List<PostItem>> fetchMyPosts({
+    int page = 0,
+    int limit = 20,
+  }) async {
+    try {
+      final userId = (await getCurrentUser())?.id;
+      if (userId == null) {
+        throw Exception('用户未登录');
+      }
       // 这里可以添加分页参数，例如 page 和 limit
       final response = await _dioClient.dio.get(
         '/posts',
@@ -36,7 +69,7 @@ class PostApiService {
           .map((json) => PostItem.fromJson(json))
           .toList();
     } on DioException catch (e) {
-      throw Exception('获取内容列表失败: ${e.message}');
+      throw Exception('获取我的内容列表失败: ${e.message}');
     }
   }
 

@@ -3,6 +3,7 @@ import 'dart:math' as math; // 用于 FAB 图标旋转和菜单项定位
 import 'package:camera/camera.dart'; // <--- 添加 camera 导入
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart'; // <--- 添加 image_picker 导入
+import 'package:ppx_client/data/models/category_model.dart';
 
 import '../../../widgets/content_list_page.dart'; // 假设这个路径仍然有效
 import '../common/display_picture_screen.dart'; // <--- 引入 DisplayPictureScreen
@@ -28,6 +29,15 @@ class _HomePageViewState extends State<HomePageView>
 
   late final List<Widget> _tabViews;
 
+  // Dummy categories for demonstration
+  final List<Category> _categories = [
+    Category(id: 0, name: '推荐'), // Assuming 0 is for all/recommended
+    Category(id: 1, name: '视频'),
+    Category(id: 2, name: '图文'),
+    Category(id: 3, name: '关注'),
+    Category(id: 4, name: '直播'),
+  ];
+
   bool _isMenuOpen = false;
   late AnimationController _menuAnimationController;
   late Animation<double> _fabIconAnimation;
@@ -43,11 +53,11 @@ class _HomePageViewState extends State<HomePageView>
   void initState() {
     super.initState();
     _tabViews = [
-      const ContentListPage(category: '推荐'),
-      const ContentListPage(category: '视频'),
-      const ContentListPage(category: '图文'),
-      const ContentListPage(category: '关注'),
-      const ContentListPage(category: '直播'),
+      ContentListPage(category: _categories[0]), // Recommended/All
+      ContentListPage(category: _categories[1]),
+      ContentListPage(category: _categories[2]),
+      ContentListPage(category: _categories[3]),
+      ContentListPage(category: _categories[4]),
     ];
     _initializeCameras(); // <--- 调用初始化摄像头的方法
 

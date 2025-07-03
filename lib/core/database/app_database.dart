@@ -3,6 +3,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:ppx_client/core/utils/app_logger.dart';
 import 'package:ppx_client/data/models/post_item_model.dart';
+import '../../data/models/category_model.dart';
 import '../../data/models/user_model.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 
@@ -21,6 +22,8 @@ class AppDatabase {
       // 注册Adapter (如果你的模型需要存储到Hive)
       Hive.registerAdapter(UserModelAdapter()); // 为 UserModel 注册适配器
       Hive.registerAdapter(PostItemAdapter()); // 注册 PostItemAdapter
+
+      Hive.registerAdapter(CategoryAdapter()); // Register CategoryAdapter
 
       // 打开 Box
       await Hive.openBox<UserModel>('userBox'); // 打开存储 UserModel 的 Box

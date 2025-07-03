@@ -29,13 +29,14 @@ class PostItemAdapter extends TypeAdapter<PostItem> {
       isLiked: fields[9] as bool,
       isUnliked: fields[10] as bool,
       timestampMillisecondsSinceEpochInput: fields[11] as int,
+      categoryId: fields[12] as int?,
     );
   }
 
   @override
   void write(BinaryWriter writer, PostItem obj) {
     writer
-      ..writeByte(12)
+      ..writeByte(13)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -59,7 +60,9 @@ class PostItemAdapter extends TypeAdapter<PostItem> {
       ..writeByte(10)
       ..write(obj.isUnliked)
       ..writeByte(11)
-      ..write(obj._timestampMillisecondsSinceEpoch);
+      ..write(obj._timestampMillisecondsSinceEpoch)
+      ..writeByte(12)
+      ..write(obj.categoryId);
   }
 
   @override

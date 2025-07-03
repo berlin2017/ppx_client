@@ -71,6 +71,9 @@ class PostItem extends HiveObject {
   @HiveField(11) // Stores timestamp as integer (millisecondsSinceEpoch)
   final int _timestampMillisecondsSinceEpoch;
 
+  @HiveField(12)
+  final int? categoryId;
+
   // Public getters for convenient access
   PostType get postType => intToPostType(_postTypeAsInt);
   DateTime get timestamp => DateTime.fromMillisecondsSinceEpoch(_timestampMillisecondsSinceEpoch);
@@ -89,6 +92,7 @@ class PostItem extends HiveObject {
     this.isLiked = false,
     this.isUnliked = false,
     required int timestampMillisecondsSinceEpochInput,
+    this.categoryId,
   })  : _postTypeAsInt = postTypeAsIntInput,
         _timestampMillisecondsSinceEpoch = timestampMillisecondsSinceEpochInput;
 
@@ -106,6 +110,7 @@ class PostItem extends HiveObject {
     bool isLiked = false,
     bool isUnliked = false,
     required DateTime timestamp,
+    int? categoryId,
   }) {
     return PostItem(
       id: id,
@@ -120,6 +125,7 @@ class PostItem extends HiveObject {
       isLiked: isLiked,
       isUnliked: isUnliked,
       timestampMillisecondsSinceEpochInput: timestamp.millisecondsSinceEpoch,
+      categoryId: categoryId,
     );
   }
 
@@ -136,6 +142,7 @@ class PostItem extends HiveObject {
     bool? isLiked,
     bool? isUnliked,
     DateTime? timestamp,
+    int? categoryId,
   }) {
     return PostItem.create(
       id: id ?? this.id,
@@ -150,6 +157,7 @@ class PostItem extends HiveObject {
       isLiked: isLiked ?? this.isLiked,
       isUnliked: isUnliked ?? this.isUnliked,
       timestamp: timestamp ?? this.timestamp,
+      categoryId: categoryId ?? this.categoryId,
     );
   }
 
@@ -168,6 +176,7 @@ class PostItem extends HiveObject {
       isLiked: json['isLiked'] as bool? ?? false,
       isUnliked: json['isUnliked'] as bool? ?? false,
       timestamp: DateTime.fromMillisecondsSinceEpoch(json['timestamp'] as int),
+      categoryId: json['categoryId'] as int?,
     );
   }
 
@@ -186,6 +195,7 @@ class PostItem extends HiveObject {
       'isLiked': isLiked,
       'isUnliked': isUnliked,
       'timestamp': timestamp.millisecondsSinceEpoch,
+      'categoryId': categoryId,
     };
   }
 }
