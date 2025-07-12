@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:ppx_client/presentation/viewmodels/auth_viewmodel.dart';
 import 'package:ppx_client/presentation/viewmodels/theme_viewmodel.dart';
 
+import 'package:ppx_client/presentation/profile/user_profile_page.dart';
+import '../pages/home/home_screen.dart';
 import 'my_posts_page.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -79,7 +81,12 @@ class ProfilePage extends StatelessWidget {
             ),
           ),
           ElevatedButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const UserProfilePage()),
+              );
+            },
             child: const Text('个人主页'),
           )
         ],
@@ -105,8 +112,6 @@ class ProfilePage extends StatelessWidget {
   }
 
   Widget _buildActionGrid(BuildContext context) {
-    final authViewModel = Provider.of<AuthViewModel>(context, listen: false);
-    final currentUserId = authViewModel.currentUser?.id;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -177,12 +182,22 @@ class ProfilePage extends StatelessWidget {
             },
           ),
           const Divider(height: 1),
-           _buildSettingsItem(
+          _buildSettingsItem(
             context,
             Icons.logout,
             '退出登录',
-            onTap: () {
-              // Handle logout
+            onTap: () async {
+              final authViewModel =
+                  Provider.of<AuthViewModel>(context, listen: false);
+              await authViewModel.logout();
+              if (context.mounted) {
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(
+                    builder: (context) => const HomeScreen(),
+                  ),
+                  (Route<dynamic> route) => false,
+                );
+              }
             },
           ),
         ],

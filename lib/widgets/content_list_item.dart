@@ -1,8 +1,10 @@
+import 'package:share_plus/share_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:ppx_client/core/constants/AppConstants.dart';
 import 'package:ppx_client/core/utils/app_logger.dart';
 import 'package:ppx_client/data/models/post_item_model.dart';
 import 'package:ppx_client/data/models/user_model.dart';
+import 'package:ppx_client/presentation/pages/post_detail/post_detail_page.dart';
 import 'package:provider/provider.dart';
 
 import '../core/network/post_api_service.dart';
@@ -413,8 +415,10 @@ class _ContentListItemState extends State<ContentListItem> {
           icon: Icons.comment_outlined,
           label: post.commentsCount.toString(),
           onPressed: () {
-            // TODO: 实现评论功能/导航到评论页
-            AppLogger.info('Comment button tapped for post ${post.id}');
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => PostDetailPage(post: post)),
+            );
           },
         ),
         _buildActionButton(
@@ -422,7 +426,7 @@ class _ContentListItemState extends State<ContentListItem> {
           icon: Icons.share_outlined,
           label: '分享', // 分享通常不显示数量
           onPressed: () {
-            // TODO: 实现分享逻辑
+            // TODO: Implement share functionality
             AppLogger.info('Share button tapped for post ${post.id}');
           },
         ),
