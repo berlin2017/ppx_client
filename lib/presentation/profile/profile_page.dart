@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:ppx_client/presentation/viewmodels/auth_viewmodel.dart';
+import 'package:ppx_client/presentation/viewmodels/theme_viewmodel.dart';
 
 import 'my_posts_page.dart';
 
@@ -9,15 +10,17 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeViewModel = Provider.of<ThemeViewModel>(context);
+
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Colors.grey[100],
-        title: const Text('我的', style: TextStyle(color: Colors.black)),
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        title: Text('我的', style: TextStyle(color: Theme.of(context).textTheme.titleLarge?.color)),
         actions: [
           IconButton(
-            icon: const Icon(Icons.settings, color: Colors.black),
+            icon: Icon(Icons.settings, color: Theme.of(context).iconTheme.color),
             onPressed: () {
               // Navigate to settings
             },
@@ -31,7 +34,7 @@ class ProfilePage extends StatelessWidget {
             const SizedBox(height: 20),
             _buildActionGrid(context),
             const SizedBox(height: 20),
-            _buildSettingsList(context),
+            _buildSettingsList(context, themeViewModel),
           ],
         ),
       ),
@@ -53,23 +56,23 @@ class ProfilePage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   '愤怒的蜘蛛侠',
-                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Theme.of(context).textTheme.titleLarge?.color),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   '共1个徽章 >',
-                  style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                  style: TextStyle(fontSize: 14, color: Theme.of(context).textTheme.bodyMedium?.color),
                 ),
                 const SizedBox(height: 8),
                 Row(
                   children: [
-                    _buildStatColumn('关注', '23'),
+                    _buildStatColumn(context, '关注', '23'),
                     const SizedBox(width: 16),
-                    _buildStatColumn('粉丝', '1'),
+                    _buildStatColumn(context, '粉丝', '1'),
                     const SizedBox(width: 16),
-                    _buildStatColumn('获赞', '10'),
+                    _buildStatColumn(context, '获赞', '10'),
                   ],
                 ),
               ],
@@ -84,18 +87,18 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  Widget _buildStatColumn(String label, String value) {
+  Widget _buildStatColumn(BuildContext context, String label, String value) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
           value,
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Theme.of(context).textTheme.titleLarge?.color),
         ),
         const SizedBox(height: 2),
         Text(
           label,
-          style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+          style: TextStyle(fontSize: 14, color: Theme.of(context).textTheme.bodyMedium?.color),
         ),
       ],
     );
@@ -132,6 +135,7 @@ class ProfilePage extends StatelessWidget {
       child: Card(
         elevation: 2,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        color: Theme.of(context).cardColor,
         child: Container(
           width: MediaQuery.of(context).size.width / 4 - 24,
           height: 80,
@@ -141,8 +145,8 @@ class ProfilePage extends StatelessWidget {
             children: [
               Icon(icon, size: 28, color: Theme.of(context).primaryColor),
               const SizedBox(height: 4),
-              Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-              Text(subtitle, style: TextStyle(fontSize: 12, color: Colors.grey[600])),
+              Text(title, style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).textTheme.titleMedium?.color)),
+              Text(subtitle, style: TextStyle(fontSize: 12, color: Theme.of(context).textTheme.bodySmall?.color)),
             ],
           ),
         ),
@@ -150,11 +154,11 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  Widget _buildSettingsList(BuildContext context) {
+  Widget _buildSettingsList(BuildContext context, ThemeViewModel themeViewModel) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16.0),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
@@ -165,11 +169,11 @@ class ProfilePage extends StatelessWidget {
           _buildSettingsItem(context, Icons.star, '原创特权', onTap: () {}),
           const Divider(height: 1),
           SwitchListTile(
-            title: const Text('深色模式'),
-            secondary: const Icon(Icons.dark_mode),
-            value: false, // Replace with state management
+            title: Text('深色模式', style: TextStyle(color: Theme.of(context).textTheme.titleMedium?.color)),
+            secondary: Icon(Icons.dark_mode, color: Theme.of(context).iconTheme.color),
+            value: themeViewModel.themeMode == ThemeMode.dark,
             onChanged: (bool value) {
-              // Handle theme change
+              themeViewModel.toggleTheme();
             },
           ),
           const Divider(height: 1),
@@ -188,9 +192,9 @@ class ProfilePage extends StatelessWidget {
 
   Widget _buildSettingsItem(BuildContext context, IconData icon, String title, {VoidCallback? onTap}) {
     return ListTile(
-      leading: Icon(icon),
-      title: Text(title),
-      trailing: const Icon(Icons.chevron_right),
+      leading: Icon(icon, color: Theme.of(context).iconTheme.color),
+      title: Text(title, style: TextStyle(color: Theme.of(context).textTheme.titleMedium?.color)),
+      trailing: Icon(Icons.chevron_right, color: Theme.of(context).iconTheme.color),
       onTap: onTap,
     );
   }

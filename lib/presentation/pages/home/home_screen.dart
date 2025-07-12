@@ -1,7 +1,8 @@
 // lib/presentation/pages/home_screen.dart
 import 'package:flutter/material.dart';
 import 'package:ppx_client/presentation/pages/user/user_list_page.dart';
-import 'package:provider/provider.dart'; // 如果你需要访问 AuthViewModel
+import 'package:provider/provider.dart';
+import 'package:ppx_client/presentation/viewmodels/theme_viewmodel.dart';
 
 import '../../../widgets/AnimatedBackground.dart';
 import '../../../widgets/AnimatedCard.dart';
@@ -53,7 +54,7 @@ class _HomeScreenState extends State<HomeScreen>
 
   @override
   Widget build(BuildContext context) {
-    // final authViewModel = Provider.of<AuthViewModel>(context); // 如果需要用户信息
+    final themeViewModel = Provider.of<ThemeViewModel>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -61,6 +62,12 @@ class _HomeScreenState extends State<HomeScreen>
         backgroundColor: Colors.transparent, // 透明 AppBar，让背景延伸
         elevation: 0,
         actions: [
+          IconButton(
+            icon: Icon(themeViewModel.themeMode == ThemeMode.light ? Icons.dark_mode : Icons.light_mode),
+            onPressed: () {
+              themeViewModel.toggleTheme();
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.settings_outlined),
             onPressed: () {
@@ -102,7 +109,7 @@ class _HomeScreenState extends State<HomeScreen>
                       style: TextStyle(
                         fontSize: 32,
                         fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                        color: Theme.of(context).brightness == Brightness.light ? Colors.black : Colors.white,
                         shadows: [
                           Shadow(
                             blurRadius: 10.0,
@@ -119,7 +126,7 @@ class _HomeScreenState extends State<HomeScreen>
                     child: Text(
                       '今天想做些什么？',
                       textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 18, color: Colors.white70),
+                      style: TextStyle(fontSize: 18, color: Theme.of(context).brightness == Brightness.light ? Colors.black54 : Colors.white70),
                     ),
                   ),
                   const SizedBox(height: 50),
@@ -211,21 +218,6 @@ class _HomeScreenState extends State<HomeScreen>
           ),
         ],
       ),
-      // 可以考虑添加一个 FloatingActionButton 或 BottomNavigationBar
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: () {},
-      //   child: Icon(Icons.add),
-      //   backgroundColor: Theme.of(context).colorScheme.secondary,
-      // ),
-      // bottomNavigationBar: BottomNavigationBar(
-      //   items: const [
-      //     BottomNavigationBarItem(icon: Icon(Icons.home), label: '首页'),
-      //     BottomNavigationBarItem(icon: Icon(Icons.search), label: '发现'),
-      //     BottomNavigationBarItem(icon: Icon(Icons.person), label: '我的'),
-      //   ],
-      //   // currentIndex: _selectedIndex,
-      //   // onTap: _onItemTapped,
-      // ),
     );
   }
 
@@ -296,5 +288,3 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 }
-
-// --- 动画相关的辅助 Widgets ---

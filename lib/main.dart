@@ -17,9 +17,15 @@ import 'data/datasources/user_remote_datasource.dart';
 import 'data/repositories/post_repository.dart';
 import 'data/repositories/user_repository_impl.dart';
 
+import 'package:ppx_client/presentation/viewmodels/theme_viewmodel.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await AppDatabase.init(); // 初始化 Hive 数据库
+
+  // Initialize ThemeViewModel before running the app
+  final themeViewModel = ThemeViewModel();
+  await themeViewModel.initTheme(); // Ensure theme is loaded before app starts
 
   // 依赖注入 (使用 Provider)
   final dioClient = DioClient();
@@ -61,6 +67,7 @@ void main() async {
         ChangeNotifierProvider(
           create: (_) => PostListViewModel(repository: postRepository),
         ),
+        ChangeNotifierProvider.value(value: themeViewModel), // Provide the already initialized instance
       ],
       child: const MyApp(),
     ),
